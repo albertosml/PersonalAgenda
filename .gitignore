@@ -1,0 +1,19 @@
+# Elimino archivos de datos
+*.xlsx
+*.csv
+*.dat
+
+# Elimino todos los pdfs, excepto la plantilla del registro diario de trabajadores
+*.pdf
+
+# Elimino logs
+*.log
+
+# Elimino zips
+*.gz
+*.tar
+*.tar.gz
+*.zip
+
+# Elimino archivos de compilación 
+*.[oa]

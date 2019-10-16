@@ -1,2 +1,4 @@
-# PersonalRecorder
-Bot de Telegram para la creación de eventos y recordatorios
+# PersonalReminder
+
+**PersonalReminder** es una aplicación, que se va a desplegar en la nube, la cual está enfocada a la gestión de eventos,
+tanto personales como grupales, y a la creación de recordatorios para estos eventos.
