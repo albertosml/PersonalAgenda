@@ -17,3 +17,6 @@
 
 # Elimino archivos de compilación 
 *.[oa]
+
+# Elimino directorios del editor
+.idea/
