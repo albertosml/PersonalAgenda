@@ -20,3 +20,4 @@
 
 # Elimino directorios del editor
 .idea/
+.vscode/
