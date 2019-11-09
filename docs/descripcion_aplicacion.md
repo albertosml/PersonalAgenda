@@ -29,20 +29,17 @@ acontecimiento no se insertaría en esa hora.
 
 Los días no laborables, como fines de semanas, festivos o vacaciones, son días en los cuales no se van a crear 
 acontecimientos personales, por lo que antes de insertar un acontecimiento o modificar su fecha se comprobará que ese 
-día sea laborable. Ese conjunto de días no laborables, estará formado por un motivo, fecha de recuerdo y el conjunto
-de días no laborables (como pueden ser días de la semana concretos, un conjunto de días, que no tienen porque ser 
-consecutivos, o un día concreto). Por tanto, las funcionalidades de esta entidad son las siguientes: 
+día sea laborable. Esos días no laborables, estarán formados por el usuario asociado a ellos, los días de antelación de 
+recuerdo y los conjuntos de días no laborables (como pueden ser días de la semana concretos, un conjunto de días continuos,
+o un día concreto). Por tanto, las funcionalidades de esta entidad son las siguientes: 
 
-- Crear un conjunto de días no laborables.
-- Eliminar un conjunto de días no laborables ya existente.
-- Modificar los datos de un conjunto de días no laborables.
+- Crear un conjunto de días no laborables para un usuario.
 - Añadir días a un conjunto de días no laborables.
 - Eliminar días a un conjunto de días no laborables.
-- Restaurar conjunto de días no laborables.
 - Devolver los días no laborables de un año concreto.
-- Recordar un conjunto de días no laborables indicando para ello la fecha de recuerdo.
+- Recordar un día no laboral.
 - Cancelar recordatorio.
-- Una persona no podrá tener un mismo día en 2 conjuntos de días no laborables.
+- Modificar recordatorio.
 
 Esta aplicación se ha creado para poder tener una agenda personal de trabajo online, sin necesidad de tener una agenda 
 en papel o una libreta para ello, de cara a apuntar las tareas a hacer o las reuniones en el trabajo a los que hay que 

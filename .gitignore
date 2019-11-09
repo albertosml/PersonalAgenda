@@ -21,3 +21,6 @@
 # Elimino directorios del editor
 .idea/
 .vscode/
+
+# Archivos de Ruby
+Gemfile.lock

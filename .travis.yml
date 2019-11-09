@@ -1,0 +1,14 @@
+language: ruby
+
+rvm:
+ - 2.6.5
+ - 2.7
+             
+before_install:
+ - cd acontecimiento
+ - gem install bundle -v 2.0.2
+ - bundle install
+             
+script:
+ - cd acontecimiento
+ - rake test --trace=stdout
