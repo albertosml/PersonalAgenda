@@ -1,77 +1,141 @@
 # PersonalWorkerAgenda
 
+[![Build Status](https://travis-ci.org/albertosml/PersonalWorkerAgenda.svg?branch=master)](https://travis-ci.org/albertosml/PersonalWorkerAgenda)  
+
+[![CircleCI](https://circleci.com/gh/albertosml/PersonalWorkerAgenda/tree/master.svg?style=svg)](https://circleci.com/gh/albertosml/PersonalWorkerAgenda/tree/master)
+
 ## Apartados anteriores
 
 - [Descripción de la aplicación](descripcion_aplicacion.md)
 - [Licencia](licencia.md)
 - [Información adicional](informacion_adicional.md)
+- [Arquitectura y tecnologías](arquitectura_tecnologias.md)
 
-### Arquitectura
+## Integración continua y herramientas de construcción
 
-La arquitectura que se va a usar para esta aplicación es una basada en microservicios, en la cual cada entidad del 
-problema será un microservicio, desplegando así de forma independiente la lógica de cada uno de los elementos 
-principales del problema. 
+### Entidad "Acontecimiento"
 
-Ahora, se va a exponer un diagrama que representa la arquitectura de la aplicación:
+Para esta entidad, primero se ha configurado la integración continua con Travis a través del archivo `.travis.yml`:
 
-![Diagrama Arquitectura](images/arquitectura_cc.png)
+```
+language: ruby
 
-En él, se puede observar que va a haber un cliente, que en este caso, es un bot de Telegram, pero podría ser una web o 
-una aplicación (aunque, en ese caso, se tendría que añadir un microservicio para la gestión de usuarios, ya que en esta
-aplicación se pasa la autentación de los usuarios a Telegram); pues bien, este cliente, se va a comunicar con nuestro 
-servidor a través de una API Gateway, a la cual le enviará peticiones. 
+rvm:
+ - 2.6.5
+ - 2.7
+             
+before_install:
+ - cd acontecimiento
+ - gem install bundle
+ - bundle install
+             
+script:
+ - cd acontecimiento
+ - rake test --trace=stdout
+```
 
-Esta API Gateway, se encargará de recibir las peticiones de cada cliente y pasárselas al microservicio más adecuado para
-su procesamiento. Luego, cada microservicio monta una REST API, encargada de gestionar las peticiones para esa entidad 
-y, una base de datos, en la que se almacena la información sobre la entidad de cada microservicio.
+En este archivo, se puede observar que para esta entidad se va a usar el lenguaje de programación Ruby, en concreto, se
+van a usar las versiones 2.6.5 (la última versión estable) y la versión 2.7 (que es ahora mismo la versión de 
+desarrollo) para ejecutar los tests.
 
-También, se dispondrá de un sistema de logs centralizado para almacenar el historial de peticiones del sistema, así 
-como de un sistema de almacenamiento de la configuración crítica de la aplicación (direcciones y puertos de los 
-microservicios, API keys, etc..), el cual va a estar centralizado. Tanto el API gateway como los microservicios, van a 
-estar conectados a estos dos sistemas, de los cuales se acaban de hablar.
+Luego, antes de la ejecución de los tests, se va a proceder a la instalación de las herramientas necesarias para la 
+ejecución, pues bien, para empezar, se va a instalar `bundle`, una herramienta que nos va a permitir instalar el resto 
+de gemas especificadas en el archivo `Gemfile`, pero antes, hay que dirigirse al directorio `acontecimiento`, en el 
+cual se ubica el código asociado a esta entidad y este archivo que se necesita, por último, se procede a instalar el 
+resto de paquetes con el comando `bundle install`.
 
-Respecto a la comunicación entre microservicios, la entidad `Acontecimiento` se comunicará con la entidad `Vacaciones`
-para obtener la información de los días no laborables de un usuario.
+Finalmente, nos dirigimos al directorio, donde se ubica el código del microservicio, el cual contiene el archivo 
+`Rakefile` con la tarea encargada de ejecutar los tests, con el comando `rake test --trace=stdout`; en este comando, se
+ha especificado la opción `--trace=stdout` para imprimir el resultado de la ejecución de los tests en la salida estándar.
 
-Por último, se va a montar dos brokers de mensajería mediante el patrón `publish/subscribe` para las notificaciones de 
-los recordatorios tanto de los días no laborables como de los acontecimientos, donde se publica un mensaje con el 
-contenido de la notificación, a la cola de mensajes del API gateway; luego, este API gateway consume el mensaje y envía 
-la notificación correspondiente a esa persona. 
+Lo siguiente que se ha hecho es configurar la herramienta de construcción, en el archivo `Rakefile`, en la cual se ha
+agregado una tarea, llamada `test`, que se encarga de ejecutar los tests del microservicio con Rspec.
 
-### Tecnologías
+```
+require 'rspec/core/rake_task'
 
-Ahora, se van a presentar las tecnologías (y bibliotecas), que van a usar los diferentes elementos de la aplicación:
+task :tests do
+  RSpec::Core::RakeTask.new(:spec) do |t|
+    t.pattern = 'tests/tests.rb'
+  end
+  Rake::Task["spec"].execute
+end
+```
 
-- API Gateway -> Para este elemento, se ha optado por usar el lenguaje [Go](https://golang.org/), el cual es compilado y 
-permite controlar de forma eficiente, sencilla y automática la concurrencia, pudiendo así procesar más rápidamente las 
-peticiones de los clientes al sistema, al poder atender más peticiones a la vez de forma eficiente. En concreto, se va a 
-usar el framework [KrakenD](https://github.com/devopsfaith/krakend), el cual permite montar una API Gateway que sea 
-sencilla de configurar (para conectar los microservicios), concurrente y de alto rendimiento, también, este framework 
-permite mantener un sistema de logs con el historial de peticiones del sistema.
+### Entidad "Días no laborables"
 
-- Entidad `Acontecimiento` -> Para este microservicio, se va a optar por usar el lenguaje de programación 
-[Ruby](https://www.ruby-lang.org/en/), que es un lenguaje interpretado; en concreto, se va a usar el lenguaje específico 
-para crear aplicaciones web, llamado [Sinatra](https://github.com/sinatra/sinatra), el cual permite montar una REST API 
-de manera muy sencilla, gestionando todo tipo de peticiones HTTP. La base de datos que va a usar este microservicio es 
-[Apache Cassandra](http://cassandra.apache.org/), la cual es una base de datos no relacional orientada a columnas, 
-eligiéndose debido a su escalibilidad, su tolerancia a fallos, su eficiente sistema de indexación y, garantizando además
-que toda columna de un registro tiene su correspondiente valor, siendo este nuestro caso para esta entidad; pues bien,
-para que esta base de datos se comunique con nuestro microservicio en Ruby, se va a usar la librería 
-[cassandra-driver](https://github.com/datastax/ruby-driver). También, se va almacenar aquí la configuración crítica del 
-sistema, usando un almacén clave-valor distribuido como es [etcd](https://github.com/etcd-io/etcd), el cual se puede 
-usar en Ruby de manera sencilla, a través de la librería [etcdv3](https://github.com/davissp14/etcdv3-ruby). Por último,
-para almacenar los logs de este microservicio, se va a usar la librería [logger](https://github.com/ruby/logger) y, 
-montará un broker de mensajería con RabbitMQ, el cual usa el protocolo AMQP para las comunicaciones, apoyándose en la 
-librería [bunny](https://github.com/ruby-amqp/bunny).
+Aquí, primero se ha configurado la integración continua, usando CircleCI, en el archivo `.circleci/config.yml`:
 
-- Entidad `DiasNoLaborables` -> Para este microservicio, se ha optado por usar el framework 
-[Flask](http://flask.palletsprojects.com/en/1.1.x/), basado en un lenguaje de programación interpretado y, muy usado en 
-la actualidad, como es [Python](https://www.python.org/). Este microservicio va a tener asociada una base de datos no 
-relacional orientada a documentos, como es [MongoDB](https://www.mongodb.com/), elegida para esta entidad debido a su 
-escabilidad, eficiencia y, sobre todo, por su flexibilidad en la estructura de datos, ya que va a haber diferentes 
-formas de establecer un conjunto de días no laborables (mediante el día de la semana o un conjunto de días); la 
-aplicación web se va a comunicar con la base de datos a través de la librería 
-[pymongo](https://api.mongodb.com/python/current/). Para los logs del microservicio, se va a utilizar la librería 
-[logging](https://docs.python.org/2/library/logging.html), la cual viene asociada ya de serie al lenguaje. Por último, 
-para las notificaciones de los usuarios a las personas correspondientes, se montará un broker de mensajería con RabbitMQ, 
-usando para ello la librería [pika](https://pika.readthedocs.io/en/stable/).
+```
+version: 2
+jobs:
+  test-3.6: &test
+    docker:
+      - image: circleci/python:3.6
+
+    steps:
+      - run:
+          name: Instalar entorno de ejecución
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            cd diasnolaborables
+            pip3 install invoke
+            invoke clean build
+
+      - run:
+          name: Ejecutar los tests
+          command: |
+            . venv/bin/activate
+            cd diasnolaborables 
+            invoke test
+  
+  test-3.7:
+    <<: *test
+    docker:
+      - image: circleci/python:3.7
+
+  test-3.8-desarrollo:
+    <<: *test
+    docker:
+      - image: circleci/python:3.8.0b3
+```
+
+En este archivo, se puede observar que se han creado 3 trabajos que ejecutan los mismos comandos, tanto para construir
+el entorno como para ejecutar los tests, diferenciándose únicamente en la versión de Python que se usa; en este caso, 
+se ha optado por usar las últimas versiones estables del lenguaje de programación Python (3.6 y 3.7), añadiéndose 
+también una versión de desarrollo `beta` de Python 3.8. 
+
+En cada trabajo, lo que se hace primero es obtener una imagen de Docker específica, para ejecutar los tests en CircleCI
+con la versión correspondiente de Python; luego, se ejecutan los comandos asociados a la instalación del entorno de
+ejecución de los tests, entre los cuales se incluye la creación del entorno virtual de Python, la instalación de la
+herramienta de construcción `invoke` y, la ejecución, con esta herramienta, de las tareas asociadas a eliminar los
+archivos de caché de Python, con extensión `*.pyc` (clean) y, a instalar los paquetes necesarios para la ejecución de
+estos tests (build); finalmente, se ejecutan los tests con la tarea test de `invoke`, activando antes, para ello, el 
+entorno virtual. 
+
+Por último, se puede contemplar, que para el primer trabajo se ha creado un `anchor`, que va a ser extendido en los
+otros 2 trabajos para así replicar los pasos a ejecutar, cambiando únicamente la versión de Python para ejecutar los tests.
+
+Una vez se tiene la integración continua, lo único que quedaría es configurar la herramienta de construcción, para 
+ello, se ha utilizado la herramienta `invoke` y se ha creado el siguiente archivo `tasks.py`:
+
+```
+from invoke import task
+
+@task
+def clean(c):
+    c.run("rm -rf **/*.pyc")
+
+@task
+def build(c):
+    c.run("pip3 install -r requirements.txt")
+
+@task
+def test(c):
+    c.run("pytest tests/*")
+```
+
+En él, se han creado 3 tareas usando la herramienta `invoke`, una primera, llamada `clean`, para eliminar los archivos 
+de caché de Python, otra, llamada `build`, para instalar los paquetes necesarios, especificados en el archivo de
+requerimientos de Python y, una última, llamada `test`, que ejecuta los tests del microservicio con `pytest`.

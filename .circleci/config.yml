@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  test-3.6: &test
+    docker:
+      - image: circleci/python:3.6
+
+    steps:
+      - run:
+          name: Instalar entorno de ejecución
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            cd diasnolaborables
+            pip3 install invoke
+            invoke clean build
+
+      - run:
+          name: Ejecutar los tests
+          command: |
+            . venv/bin/activate
+            cd diasnolaborables 
+            invoke test
+  
+  test-3.7:
+    <<: *test
+    docker:
+      - image: circleci/python:3.7
+
+  test-3.8-desarrollo:
+    <<: *test
+    docker:
+      - image: circleci/python:3.8.0b3

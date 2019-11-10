@@ -24,3 +24,9 @@
 
 # Archivos de Ruby
 Gemfile.lock
+
+# Archivos y directorios de Python
+*.pyc
+venv/
+__pycache__/
+.pytest_cache/
