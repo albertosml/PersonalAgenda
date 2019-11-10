@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  test-3.6: &test
+  build: &test-3.6
     docker:
       - image: circleci/python:3.6
 
@@ -22,11 +22,11 @@ jobs:
             invoke test
   
   test-3.7:
-    <<: *test
+    <<: *test-3.6
     docker:
       - image: circleci/python:3.7
 
   test-3.8-desarrollo:
-    <<: *test
+    <<: *test-3.6
     docker:
       - image: circleci/python:3.8.0b3
