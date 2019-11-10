@@ -73,21 +73,24 @@ jobs:
     docker:
       - image: circleci/python:3.6
 
+    working_directory: ~/repo
+
     steps:
+      - checkout:
+          path: ~/repo/diasnolaborables
+
       - run:
           name: Instalar entorno de ejecución
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            cd ~/diasnolaborables
             pip3 install invoke
             invoke clean build
 
       - run:
           name: Ejecutar los tests
           command: |
-            . venv/bin/activate
-            cd ~/diasnolaborables 
+            . venv/bin/activate 
             invoke test
   
   test-3.7:
@@ -107,12 +110,12 @@ se ha optado por usar las últimas versiones estables del lenguaje de programaci
 también una versión de desarrollo `beta` de Python 3.8. 
 
 En cada trabajo, lo que se hace primero es obtener una imagen de Docker específica, para ejecutar los tests en CircleCI
-con la versión correspondiente de Python; luego, se ejecutan los comandos asociados a la instalación del entorno de
-ejecución de los tests, entre los cuales se incluye la creación del entorno virtual de Python, la instalación de la
-herramienta de construcción `invoke` y, la ejecución, con esta herramienta, de las tareas asociadas a eliminar los
-archivos de caché de Python, con extensión `*.pyc` (clean) y, a instalar los paquetes necesarios para la ejecución de
-estos tests (build); finalmente, se ejecutan los tests con la tarea test de `invoke`, activando antes, para ello, el 
-entorno virtual. 
+con la versión correspondiente de Python; luego, hacemos un `checkout` al directorio `diasnolaborables`, donde se ubica
+el código de la entidad; después, se ejecutan los comandos asociados a la instalación del entorno de ejecución de los 
+tests, entre los cuales se incluye la creación del entorno virtual de Python, la instalación de la herramienta de 
+construcción `invoke` y, la ejecución, con esta herramienta, de las tareas asociadas a eliminar los archivos de caché 
+de Python, con extensión `*.pyc` (clean) y, a instalar los paquetes necesarios para la ejecución de estos tests (build); 
+finalmente, se ejecutan los tests con la tarea test de `invoke`, activando antes, para ello, el entorno virtual. 
 
 Por último, se puede contemplar, que para el primer trabajo se ha creado un `anchor`, que va a ser extendido en los
 otros 2 trabajos para así replicar los pasos a ejecutar, cambiando únicamente la versión de Python para ejecutar los tests.

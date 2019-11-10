@@ -4,21 +4,24 @@ jobs:
     docker:
       - image: circleci/python:3.6
 
+    working_directory: ~/repo
+
     steps:
+      - checkout:
+          path: ~/repo/diasnolaborables
+
       - run:
           name: Instalar entorno de ejecución
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            cd ~/diasnolaborables
             pip3 install invoke
             invoke clean build
 
       - run:
           name: Ejecutar los tests
           command: |
-            . venv/bin/activate
-            cd ~/diasnolaborables 
+            . venv/bin/activate 
             invoke test
   
   test-3.7:
