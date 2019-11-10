@@ -79,7 +79,7 @@ jobs:
           command: |
             python3 -m venv venv
             . venv/bin/activate
-            cd diasnolaborables
+            cd ~/diasnolaborables
             pip3 install invoke
             invoke clean build
 
@@ -87,7 +87,7 @@ jobs:
           name: Ejecutar los tests
           command: |
             . venv/bin/activate
-            cd diasnolaborables 
+            cd ~/diasnolaborables 
             invoke test
   
   test-3.7:
