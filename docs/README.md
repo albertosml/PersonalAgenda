@@ -69,7 +69,7 @@ Aquí, primero se ha configurado la integración continua, usando CircleCI, en e
 ```
 version: 2
 jobs:
-  build: &test-3.6
+  build: &test
     docker:
       - image: circleci/python:3.6
 
@@ -91,12 +91,12 @@ jobs:
             invoke test
   
   test-3.7:
-    <<: *test-3.6
+    <<: *test
     docker:
       - image: circleci/python:3.7
 
   test-3.8-desarrollo:
-    <<: *test-3.6
+    <<: *test
     docker:
       - image: circleci/python:3.8.0b3
 ```
