@@ -53,6 +53,8 @@ ha especificado la opción `--trace=stdout` para imprimir el resultado de la eje
 Lo siguiente que se ha hecho es configurar la herramienta de construcción, en el archivo `Rakefile`, en la cual se ha
 agregado una tarea, llamada `test`, que se encarga de ejecutar los tests del microservicio con Rspec.
 
+> buildtool: acontecimiento/Rakefile
+
 ```
 require 'rspec/core/rake_task'
 
@@ -133,6 +135,8 @@ otros 2 trabajos para así replicar los pasos a ejecutar, cambiando únicamente 
 
 Una vez se tiene la integración continua, lo único que quedaría es configurar la herramienta de construcción, para 
 ello, se ha utilizado la herramienta `invoke` y se ha creado el siguiente archivo `tasks.py`:
+
+> buildtool: diasnolaborables/tasks.py
 
 ```
 from invoke import task
