@@ -5,10 +5,8 @@ rvm:
  - 2.7
              
 before_install:
- - cd acontecimiento
  - gem install bundle
  - bundle install
              
 script:
- - cd acontecimiento
  - rake test --trace=stdout
