@@ -1,5 +1,7 @@
 # PersonalWorkerAgenda
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
 [![Build Status](https://travis-ci.org/albertosml/PersonalWorkerAgenda.svg?branch=master)](https://travis-ci.org/albertosml/PersonalWorkerAgenda)  
 
 [![CircleCI](https://circleci.com/gh/albertosml/PersonalWorkerAgenda/tree/master.svg?style=svg)](https://circleci.com/gh/albertosml/PersonalWorkerAgenda/tree/master)
@@ -69,15 +71,15 @@ Aquí, primero se ha configurado la integración continua, usando CircleCI, en e
 ```
 version: 2
 jobs:
-  build: &test
+  test-3.6: &test
     docker:
       - image: circleci/python:3.6
 
-    working_directory: ~/diasnolaborables
+    working_directory: ~/repo/diasnolaborables
 
     steps:
       - checkout:
-          path: ~/diasnolaborables
+          path: ~/repo
 
       - run:
           name: Instalar entorno de ejecución
@@ -102,6 +104,14 @@ jobs:
     <<: *test
     docker:
       - image: circleci/python:3.8.0b3
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - test-3.6
+      - test-3.7
+      - test-3.8-desarrollo
 ```
 
 En este archivo, se puede observar que se han creado 3 trabajos que ejecutan los mismos comandos, tanto para construir
@@ -110,8 +120,9 @@ se ha optado por usar las últimas versiones estables del lenguaje de programaci
 también una versión de desarrollo `beta` de Python 3.8. 
 
 En cada trabajo, lo que se hace primero es obtener una imagen de Docker específica, para ejecutar los tests en CircleCI
-con la versión correspondiente de Python; luego, hacemos un `checkout` al directorio `diasnolaborables`, donde se ubica
-el código de la entidad; después, se ejecutan los comandos asociados a la instalación del entorno de ejecución de los 
+con la versión correspondiente de Python; luego, establecemos el directorio `diasnolaborables` como directorio de trabajo,
+ya que es ahí donde se ubica el código de la entidad; después, hacemos un `checkout` al directorio que contiene el código 
+del repositorio; posteriormente, se ejecutan los comandos asociados a la instalación del entorno de ejecución de los 
 tests, entre los cuales se incluye la creación del entorno virtual de Python, la instalación de la herramienta de 
 construcción `invoke` y, la ejecución, con esta herramienta, de las tareas asociadas a eliminar los archivos de caché 
 de Python, con extensión `*.pyc` (clean) y, a instalar los paquetes necesarios para la ejecución de estos tests (build); 

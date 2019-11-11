@@ -6,7 +6,7 @@ rvm:
              
 before_install:
  - cd acontecimiento
- - gem install bundle -v 2.0.2
+ - gem install bundle
  - bundle install
              
 script:
