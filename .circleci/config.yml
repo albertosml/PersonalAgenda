@@ -1,14 +1,14 @@
 version: 2
 jobs:
-  build: &test
+  test-3.6: &test
     docker:
       - image: circleci/python:3.6
 
-    working_directory: ~/diasnolaborables
+    working_directory: ~/repo/diasnolaborables
 
     steps:
       - checkout:
-          path: ~/diasnolaborables
+          path: ~/repo
 
       - run:
           name: Instalar entorno de ejecución
@@ -33,3 +33,11 @@ jobs:
     <<: *test
     docker:
       - image: circleci/python:3.8.0b3
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - test-3.6
+      - test-3.7
+      - test-3.8-desarrollo
