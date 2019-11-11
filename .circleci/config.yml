@@ -4,11 +4,11 @@ jobs:
     docker:
       - image: circleci/python:3.6
 
-    working_directory: ~/repo
+    working_directory: ~/diasnolaborables
 
     steps:
       - checkout:
-          path: ~/repo/diasnolaborables
+          path: ~/diasnolaborables
 
       - run:
           name: Instalar entorno de ejecución
