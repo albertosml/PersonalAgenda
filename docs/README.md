@@ -32,7 +32,6 @@ before_install:
  - bundle install
              
 script:
- - cd acontecimiento
  - rake test --trace=stdout
 ```
 
@@ -46,9 +45,9 @@ de gemas especificadas en el archivo `Gemfile`, pero antes, hay que dirigirse al
 cual se ubica el código asociado a esta entidad y este archivo que se necesita, por último, se procede a instalar el 
 resto de paquetes con el comando `bundle install`.
 
-Finalmente, nos dirigimos al directorio, donde se ubica el código del microservicio, el cual contiene el archivo 
-`Rakefile` con la tarea encargada de ejecutar los tests, con el comando `rake test --trace=stdout`; en este comando, se
-ha especificado la opción `--trace=stdout` para imprimir el resultado de la ejecución de los tests en la salida estándar.
+Finalmente, se dirige al archivo `Rakefile` y lanza la tarea encargada de ejecutar los tests, con el comando
+`rake test --trace=stdout`; en este comando, se ha especificado la opción `--trace=stdout` para imprimir el resultado
+de la ejecución de los tests en la salida estándar.
 
 Lo siguiente que se ha hecho es configurar la herramienta de construcción, en el archivo `Rakefile`, en la cual se ha
 agregado una tarea, llamada `test`, que se encarga de ejecutar los tests del microservicio con Rspec.
