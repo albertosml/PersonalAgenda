@@ -50,18 +50,14 @@ Finalmente, se dirige al archivo `Rakefile` y lanza la tarea encargada de ejecut
 Lo siguiente que se ha hecho es configurar la herramienta de construcción, en el archivo `Rakefile`, en la cual se ha
 agregado una tarea, llamada `test`, que se encarga de ejecutar los tests del microservicio con Rspec. También, se ha
 creado otra tarea `build`, la cual se encarga de instalar la gema `bundle`, que va a permitir instalar el resto de gemas 
-especificadas en el archivo `Gemfile`, por último, se procede a instalar el resto de paquetes con el comando `bundle install`; aquí, ambos comandos han sido especificados como comandos de shell (sh).
+especificadas en el archivo `Gemfile`, por último, se procede a instalar el resto de paquetes con el comando 
+`bundle install`; aquí, ambos comandos han sido especificados como comandos de shell (sh).
 
 > buildtool: acontecimiento/Rakefile
 
 ```
-require 'rspec/core/rake_task'
-
 task :tests do
-  RSpec::Core::RakeTask.new(:spec) do |t|
-    t.pattern = 'tests/tests.rb'
-  end
-  Rake::Task["spec"].execute
+  sh "rspec tests/tests.rb"
 end
 
 task :build do
