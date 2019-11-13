@@ -56,7 +56,7 @@ especificadas en el archivo `Gemfile`, por último, se procede a instalar el res
 > buildtool: acontecimiento/Rakefile
 
 ```
-task :tests do
+task :test do
   sh "rspec tests/tests.rb"
 end
 

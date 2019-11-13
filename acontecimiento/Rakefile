@@ -1,8 +1,7 @@
-require 'rspec/core/rake_task'
-
 task :test do
-  RSpec::Core::RakeTask.new(:spec) do |t|
-    t.pattern = 'tests/tests.rb'
-  end
-  Rake::Task["spec"].execute
+  sh "rspec tests/tests.rb"
+end
+
+task :build do
+  sh "gem install bundle; bundle install"
 end
