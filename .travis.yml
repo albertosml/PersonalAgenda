@@ -6,8 +6,8 @@ rvm:
              
 before_install:
  - cd acontecimiento
- - gem install bundle
- - bundle install
+ - gem install rake
+ - rake build --trace=stdout
              
 script:
  - rake test --trace=stdout

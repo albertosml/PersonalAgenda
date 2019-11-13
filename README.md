@@ -28,8 +28,8 @@ rvm:
              
 before_install:
  - cd acontecimiento
- - gem install bundle
- - bundle install
+ - gem install rake
+ - rake build --trace=stdout
              
 script:
  - rake test --trace=stdout
@@ -40,17 +40,17 @@ van a usar las versiones 2.6.5 (la última versión estable) y la versión 2.7 (
 desarrollo) para ejecutar los tests.
 
 Luego, antes de la ejecución de los tests, se va a proceder a la instalación de las herramientas necesarias para la 
-ejecución, pues bien, para empezar, se va a instalar `bundle`, una herramienta que nos va a permitir instalar el resto 
-de gemas especificadas en el archivo `Gemfile`, pero antes, hay que dirigirse al directorio `acontecimiento`, en el 
-cual se ubica el código asociado a esta entidad y este archivo que se necesita, por último, se procede a instalar el 
-resto de paquetes con el comando `bundle install`.
-
+ejecución, pues bien, para empezar, se va a instalar la gema `rake`, una herramienta necesaria para ejecutar la tarea 
+encargada de la construcción del entorno, con el comando `rake build --trace=stdout`; aquí, en este comando, se ha 
+especificado la opción `--trace=stdout` para imprimir el resultado de la ejecución de los tests en la salida estándar;
+pero antes, hay que dirigirse al directorio `acontecimiento`, en el cual se ubica el código asociado a esta entidad. 
 Finalmente, se dirige al archivo `Rakefile` y lanza la tarea encargada de ejecutar los tests, con el comando
-`rake test --trace=stdout`; en este comando, se ha especificado la opción `--trace=stdout` para imprimir el resultado
-de la ejecución de los tests en la salida estándar.
+`rake test --trace=stdout`.
 
 Lo siguiente que se ha hecho es configurar la herramienta de construcción, en el archivo `Rakefile`, en la cual se ha
-agregado una tarea, llamada `test`, que se encarga de ejecutar los tests del microservicio con Rspec.
+agregado una tarea, llamada `test`, que se encarga de ejecutar los tests del microservicio con Rspec. También, se ha
+creado otra tarea `build`, la cual se encarga de instalar la gema `bundle`, que va a permitir instalar el resto de gemas 
+especificadas en el archivo `Gemfile`, por último, se procede a instalar el resto de paquetes con el comando `bundle install`; aquí, ambos comandos han sido especificados como comandos de shell (sh).
 
 > buildtool: acontecimiento/Rakefile
 
@@ -62,6 +62,10 @@ task :tests do
     t.pattern = 'tests/tests.rb'
   end
   Rake::Task["spec"].execute
+end
+
+task :build do
+  sh "gem install bundle; bundle install"
 end
 ```
 
