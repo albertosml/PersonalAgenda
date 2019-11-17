@@ -4,7 +4,7 @@ class Acontecimiento
     # Métodos get
     attr_reader :titulo, :descripcion, :hora_inicio, :hora_fin, :creador, :hora_recuerdo, :eliminado
 
-    # Custom error
+    # Error customizado
     class AcontecimientoError < StandardError; end
 
 	# Constructor
