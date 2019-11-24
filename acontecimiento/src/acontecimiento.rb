@@ -69,6 +69,33 @@ class Acontecimiento
     def cancelar_recordatorio
         modificar_hora_recuerdo(nil)
     end
+
+    def to_dict
+        # Transformo las horas
+        horainicio = @hora_inicio.strftime('%d/%m/%Y %H:%M')
+
+        if @hora_fin.nil?
+            horafin = nil
+        else
+            horafin = @hora_fin.strftime('%d/%m/%Y %H:%M')
+        end
+
+        if @hora_recuerdo.nil?
+            horarecuerdo = nil
+        else
+            horarecuerdo = @hora_recuerdo.strftime('%d/%m/%Y %H:%M')
+        end
+
+        {
+            'titulo': @titulo,
+		    'descripcion': @descripcion,
+            'horainicio': horainicio,
+            'horafin': horafin,
+            'creador': @creador,
+            'horarecuerdo': horarecuerdo, 
+            'eliminado': @eliminado
+        }
+    end
     
     private
     def comprobar_acontecimiento

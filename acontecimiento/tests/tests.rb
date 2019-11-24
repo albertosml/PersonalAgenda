@@ -269,7 +269,7 @@ describe Acontecimiento do
     end
 
     it 'Se cancela un recordatorio' do 
-        acontecimiento.cancelar_recordatorio()
+        acontecimiento.cancelar_recordatorio
         expect(acontecimiento.hora_recuerdo).to eq nil
     end
 
@@ -294,8 +294,8 @@ describe Acontecimiento do
         expect(agenda.length).to eq 1
     end 
 
-    context 'Se repite el evento' do
-        it 'No se puede repetir el evento porque ya hay uno existente ese día' do
+    context 'Se repite el acontecimiento' do
+        it 'No se puede repetir el acontecimiento porque ya hay uno existente ese día' do
             acs = Acontecimientos.new
             acs.aniadir_acontecimiento(acontecimiento)
             
@@ -312,7 +312,7 @@ describe Acontecimiento do
             expect(acs.num_acontecimientos).to eq 2
         end
         
-        it 'Se repite el evento diariamente' do
+        it 'Se repite el acontecimiento diariamente' do
             acs = Acontecimientos.new
             acs.aniadir_acontecimiento(acontecimiento)
 
@@ -329,7 +329,7 @@ describe Acontecimiento do
             expect(acs.get(1).hora_inicio).to eq DateTime.new(2020, 02, 04, 12, 45)
         end
 
-        it 'Se repite el evento semanalmente' do
+        it 'Se repite el acontecimiento semanalmente' do
             acs = Acontecimientos.new
             acs.aniadir_acontecimiento(acontecimiento)
 
@@ -346,7 +346,7 @@ describe Acontecimiento do
             expect(acs.get(1).hora_inicio).to eq DateTime.new(2020, 02, 10, 12, 45)
         end
 
-        it 'Se repite el evento mensualmente' do
+        it 'Se repite el acontecimiento mensualmente' do
             acs = Acontecimientos.new
             acs.aniadir_acontecimiento(acontecimiento)
 

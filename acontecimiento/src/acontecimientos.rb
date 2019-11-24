@@ -74,9 +74,16 @@ class Acontecimientos
         # mismo día que la fecha de fin 
         fecha_fin += 1
 
-        @acontecimientos.select do |acon|
+        acs = @acontecimientos.select do |acon|
             acon.creador == creador && fecha_inicio <= acon.hora_inicio && acon.hora_inicio < fecha_fin && !acon.eliminado
         end
+        
+        acontecimientos = Array.new
+        for acontecimiento in acs do
+            acontecimientos << acontecimiento.to_dict
+        end
+
+        acontecimientos
     end
 
     def repetir_evento(creador, hora_inicio, opcion, fecha_fin)
