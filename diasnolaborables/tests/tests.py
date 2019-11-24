@@ -8,6 +8,7 @@ sys.path.append(os.path.join(os.getcwd(), 'src'))
 
 from diasnolaborables import DiasNoLaborables
 from exceptions import DiasNoLaborablesException
+from setdiasnolaborables import SetDiasNoLaborables
 
 
 def test_creacion_dias_no_laborales():
@@ -34,10 +35,34 @@ def test_creacion_dias_no_laborales():
                                             datetime(2020, 2, 3)])
         assert cd.conjunto == [datetime(2020, 1, 2)]
 
-
 def crear_conjunto_dias_no_laborables():
     cd = DiasNoLaborables(usuario='@albertosml', conjunto=[6, datetime(2020, 1, 2)])
     return cd
+
+
+def test_conjunto_duplicado():
+    cd = crear_conjunto_dias_no_laborables()
+
+    s = SetDiasNoLaborables()
+    s.set_conjunto(cd)
+
+    # Si añado el conjunto por segunda vez con el mismo creador, se lanzaría una excepción
+    with raises(DiasNoLaborablesException, match="Ya existe un conjunto de días no laborables de ese usuario"):
+        assert s.set_conjunto(cd)
+
+
+def test_obtener_conjunto_usuario():
+    s = SetDiasNoLaborables()
+
+    # Como no se ha insertado ningún conjunto, se va a producir una excepción al no encontrar ninguno con ese nombre de # usuario
+    with raises(DiasNoLaborablesException, match="No existe un conjunto de días no laborables para ese usuario"):
+        assert s.get_conjunto('@albertosml')
+
+    cd = crear_conjunto_dias_no_laborables()
+    s.set_conjunto(cd)
+
+    # Ahora ya se puede obtener el conjunto añadido
+    assert s.get_conjunto('@albertosml') == cd, "No se ha obtenido el conjunto asociado a ese usuario"
 
 
 def test_aniadir_dias_conjunto_dias_no_laborables():
@@ -78,8 +103,7 @@ def test_devolver_dias_no_laborables_anio():
     # Devolver conjunto días no laborables (Enero 2020)
     dias_no_laborables = cd.devolver_dias_no_laborables_anio(datetime(2020, 1, 1), datetime(2020, 1, 31))
 
-    assert dias_no_laborables == [datetime(2020, 1, 2), datetime(2020, 1, 4), datetime(2020, 1, 11), 
-                                    datetime(2020, 1, 18), datetime(2020, 1, 25)]
+    assert dias_no_laborables == ['02/01/2020', '04/01/2020', '11/01/2020', '18/01/2020', '25/01/2020']
 
 
 def test_modificar_recordatorio():

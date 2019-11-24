@@ -80,7 +80,7 @@ class DiasNoLaborables:
 
         while fecha_inicio <= fecha_fin:
             if self._es_dia_no_laboral(fecha_inicio):
-                dias_no_laborables.append(fecha_inicio)
+                dias_no_laborables.append(fecha_inicio.strftime("%d/%m/%Y"))
 
             fecha_inicio = fecha_inicio + timedelta(days=1)
 
