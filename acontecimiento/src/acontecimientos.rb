@@ -113,6 +113,16 @@ class Acontecimientos
         @acontecimientos[index]
     end
 
+    def obtener_acontecimiento(creador, hora_inicio)
+        acon = @acontecimientos.find {|acon| acon.creador == creador && acon.hora_inicio == hora_inicio }
+
+        if acon == nil
+            raise Acontecimiento::AcontecimientoError, "No se ha encontrado un acontecimiento con esas características"
+        end
+
+        acon
+    end
+
     private
     def calcular_nuevas_horas(opcion, acon)
         # Calculo nuevas horas de inicio y recuerdo en base a la opción
@@ -146,16 +156,6 @@ class Acontecimientos
         hora_fin = hora_inicio + diferencia_tiempo
 
         return hora_inicio, hora_recuerdo, hora_fin
-    end
-
-    def obtener_acontecimiento(creador, hora_inicio)
-        acon = @acontecimientos.find {|acon| acon.creador == creador && acon.hora_inicio == hora_inicio }
-
-        if acon == nil
-            raise Acontecimiento::AcontecimientoError, "No se ha encontrado un acontecimiento con esas características"
-        end
-
-        acon
     end
 
     def acontecimientos_creador(creador)

@@ -91,3 +91,10 @@ class DiasNoLaborables:
 
     def cancelar_recordatorio(self):
         self.modificar_dias_antelacion_recordatorio(None)
+
+    def to_dict(self):
+        return {
+            'usuario': self.usuario,
+            'diasantelacion': self.dias_antelacion,
+            'conjunto': self.conjunto
+        }

@@ -1,7 +1,40 @@
 task :test do
-  sh "rspec tests/tests.rb"
+  sh "rspec tests/*"
 end
 
 task :build do
   sh "gem install bundle; bundle install"
+end
+
+task :run_server, [:port] do |task, args|
+  sh "rackup --host 0.0.0.0 --port #{args['port']}"
+end
+
+task :web_process do
+  sh "foreman start"
+end
+
+task :build_image, [:no_cache] do |task, args|
+  command = "docker build -t acontecimiento . "
+  if args['no_cache'] == 'true'
+    sh command + "--no-cache"
+  else 
+    sh command
+  end
+end
+
+task :run_image, [:port] do |task, args|
+  sh "docker run -p #{args['port']}:#{args['port']} --name acontecimiento acontecimiento"
+end
+
+task :stop_container do
+  sh "docker stop acontecimiento"
+end
+
+task :remove_container, [:all] do |task, args|
+  if args['all'] == 'true'
+    sh "docker rm $(docker ps -a -q)"
+  else
+    sh "docker rm acontecimiento"
+  end
 end
