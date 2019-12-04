@@ -24,6 +24,7 @@
 
 # Archivos de Ruby
 Gemfile.lock
+.rake_tasks~
 
 # Archivos y directorios de Python
 *.pyc

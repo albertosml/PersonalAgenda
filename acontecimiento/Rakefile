@@ -1,3 +1,7 @@
+task :clean do
+  sh "rm .rake_tasks~ Gemfile.lock"
+end
+
 task :test do
   sh "rspec tests/*"
 end
@@ -10,10 +14,6 @@ task :run_server, [:port] do |task, args|
   sh "rackup --host 0.0.0.0 --port #{args['port']}"
 end
 
-task :web_process do
-  sh "foreman start"
-end
-
 task :build_image, [:no_cache] do |task, args|
   command = "docker build -t acontecimiento . "
   if args['no_cache'] == 'true'
@@ -24,7 +24,7 @@ task :build_image, [:no_cache] do |task, args|
 end
 
 task :run_image, [:port] do |task, args|
-  sh "docker run -p #{args['port']}:#{args['port']} --name acontecimiento acontecimiento"
+  sh "docker run -p #{args['port']}:#{args['port']} --env PORT=#{args['port']} --name acontecimiento acontecimiento"
 end
 
 task :stop_container do

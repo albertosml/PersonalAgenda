@@ -1,4 +1,4 @@
-from invoke import task
+from invoke import task, call
 
 @task
 def clean(c):
@@ -17,20 +17,20 @@ def run_server(c, port=8000):
     c.run("gunicorn --chdir src app:app -b 0.0.0.0:{} --log-syslog".format(port))
 
 @task(optional=['tag', 'no-cache'])
-def build_docker(c, tag='diasnolaborables', cache=True):
+def build_image(c, tag='diasnolaborables', cache=True):
     nocache = '' if cache else '--no-cache '
     c.run("docker build {}-t {} .".format(nocache, tag))
 
 @task(optional=['all', 'name'])
 def remove_container(c, all=False, name='diasnolaborables'):
     if all:
-        c.run("docker rm $(docker ps -a -q)")
+        c.run("docker container prune")
     else:
         c.run("docker rm {}".format(name))
 
-@task(pre=[remove_container], optional=['port', 'name', 'image'])
+@task(optional=['port', 'name', 'image'])
 def run_image(c, port=8000, name='diasnolaborables', image='diasnolaborables'):
-    c.run("docker run -p {}:{} --name {} {}".format(port, port, name, image))
+    c.run("docker run -p {}:{} --env PORT={} --name {} {}".format(port, port, port, name, image))
 
 @task(optional=['name'])
 def stop_container(c, name='diasnolaborables'):
