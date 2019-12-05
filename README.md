@@ -137,6 +137,8 @@ Para ello, se ha creado una tarea con la librería Rake, la cual ejecuta el micr
 la aplicación Rack, especificada en el archivo [config.ru](https://github.com/albertosml/PersonalWorkerAgenda/blob/master/acontecimiento/config.ru), 
 en el host `0.0.0.0` y en el puerto especificado en la variable de entorno `PORT`. La tarea sería la siguiente:
 
+> buildtool: acontecimiento/Rakefile
+
 ```
 task :run_server, [:port] do |task, args|
   sh "rackup --host 0.0.0.0 --port #{args['port']}"
