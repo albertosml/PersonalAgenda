@@ -294,7 +294,7 @@ reconstruye la imagen.
 
 En ambos microservicios, se ha hecho lo mismo y, aquí, se presentan sus contenedores en DockerHub.
 
-> Contenedor Acontecimiento: https://hub.docker.com/r/albertosml/acontecimiento
+> Contenedor: https://hub.docker.com/r/albertosml/acontecimiento
 
 > Contenedor Dias No Laborables: https://hub.docker.com/r/albertosml/diasnolaborables
 
