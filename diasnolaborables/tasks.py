@@ -10,7 +10,7 @@ def build(c):
 
 @task(optional=['dir'])
 def test(c, dir='tests'):
-    c.run("pytest {}/*".format(dir))
+    c.run("pytest {}/*.py".format(dir))
 
 @task(optional=['port'])
 def run_server(c, port=8000):
