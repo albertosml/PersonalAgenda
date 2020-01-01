@@ -1,9 +1,6 @@
 # Se ha optado por una imagen base con Python 3.8
 FROM python:3.8.0-slim-buster
 
-# Establezco el creador del archivo
-MAINTAINER albertosml@correo.ugr.es
-
 # Actualizar el sistema, puesto que la imagen de Python se basa en la de Ubuntu 
 RUN apt-get update
 
@@ -15,7 +12,7 @@ WORKDIR $DIR
 EXPOSE $PORT
 
 # Copiar solo aquellos archivos necesarios
-COPY requirements.txt tasks.py $DIR
+COPY requirements.txt tasks.py .env $DIR
 COPY src/*.py $DIR/src/
 
 # Se instalan los paquetes necesarios para la ejecución de la aplicación

@@ -14,7 +14,7 @@ def test(c, dir='tests'):
 
 @task(optional=['port'])
 def run_server(c, port=8000):
-    c.run("gunicorn --chdir src app:app -b 0.0.0.0:{} --log-syslog".format(port))
+    c.run("gunicorn --workers=9 --chdir src app:app -b 0.0.0.0:{} --log-syslog".format(port))
 
 @task(optional=['tag', 'no-cache'])
 def build_image(c, tag='diasnolaborables', cache=True):
@@ -28,9 +28,12 @@ def remove_container(c, all=False, name='diasnolaborables'):
     else:
         c.run("docker rm {}".format(name))
 
-@task(optional=['port', 'name', 'image'])
-def run_image(c, port=8000, name='diasnolaborables', image='diasnolaborables'):
-    c.run("docker run -p {}:{} --env PORT={} --name {} {}".format(port, port, port, name, image))
+@task(optional=['local', 'port', 'name', 'image'])
+def run_image(c, local=True, port=8000, name='diasnolaborables', image='diasnolaborables'):
+    if local:
+        c.run("docker run -p {}:{} --name {} {}".format(port, port, name, image))
+    else:
+        c.run("docker run -p {}:{} --name {} {} --env-file .env".format(port, port, name, image))
 
 @task(optional=['name'])
 def stop_container(c, name='diasnolaborables'):

@@ -31,3 +31,6 @@ Gemfile.lock
 venv/
 __pycache__/
 .pytest_cache/
+
+# Archivos con variables de entorno 
+.env

@@ -2,3 +2,8 @@ pytest
 flask
 invoke
 gunicorn
+pymongo
+mongomock
+dnspython
+Flask-Caching
+#bzt -> Este paquete no se puede instalar en Docker 

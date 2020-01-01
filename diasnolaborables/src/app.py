@@ -1,13 +1,17 @@
 from flask import Flask, request, jsonify
-from setdiasnolaborables import SetDiasNoLaborables
 from diasnolaborables import DiasNoLaborables
 from exceptions import DiasNoLaborablesException
 from datetime import datetime
+from flask_caching import Cache
 
+config = {
+    "CACHE_TYPE": "simple",
+    "CACHE_DEFAULT_TIMEOUT": 300,
+    "CACHE_IGNORE_ERRORS": True
+}
 app = Flask(__name__)
-
-# Crear el set de conjuntos de días no laborables
-s = SetDiasNoLaborables()
+app.config.from_mapping(config)
+cache = Cache(app)
 
 # Función que transforma las fechas del conjunto
 def transformar_conjunto(conjunto):
@@ -26,18 +30,14 @@ def nuevo_conjunto_dias_no_laborables():
     dias_antelacion = data.get('diasantelacion', None)
     conjunto = data.get('conjunto', [])
 
-    # Comprobar usuario
-    if s.existe_usuario(usuario):
-        return jsonify({ 'msg': 'El usuario que quiere añadir ya está incluido' }), 200
-
     # Procesar conjunto de días no laborables
     conjunto = transformar_conjunto(conjunto)
 
-    # Crear el conjunto de días no laborables para ese usuario
-    cd = DiasNoLaborables(usuario=usuario, dias_antelacion=dias_antelacion, conjunto=conjunto)
-
-    # Añadir el conjunto al set
-    s.set_conjunto(cd)
+    try:
+        # Crear el conjunto de días no laborables para ese usuario
+        DiasNoLaborables(usuario=usuario, dias_antelacion=dias_antelacion, conjunto=conjunto, insertar=True)
+    except DiasNoLaborablesException:
+        return jsonify({ 'msg': 'Problemas al crear el conjunto' }), 200
 
     return jsonify({ 'msg': 'El conjunto de días laborables para ese usuario se ha creado' }), 200
 
@@ -51,8 +51,8 @@ def aniadir_dias_no_laborables():
 
     try:
         # Obtener el conjunto para ese usuario
-        cd = s.get_conjunto(usuario)
-    except DiasNoLaborablesException as de:
+        cd = DiasNoLaborables(usuario=usuario)
+    except DiasNoLaborablesException:
         return jsonify({ 'msg': 'No existe un conjunto de días no laborables para ese usuario' }), 200
     
     # Procesar conjunto de días no laborables
@@ -73,8 +73,8 @@ def eliminar_dia_no_laboral():
 
     try:
         # Obtener el conjunto para ese usuario
-        cd = s.get_conjunto(usuario)
-    except DiasNoLaborablesException as de:
+        cd = DiasNoLaborables(usuario=usuario)
+    except DiasNoLaborablesException:
         return jsonify({ 'msg': 'No existe un conjunto de días no laborables para ese usuario' }), 200
     
     # Transformar fecha (si se ha introducido)
@@ -89,6 +89,7 @@ def eliminar_dia_no_laboral():
 
 # Ruta para obtener los días no laborables entre 2 fechas
 @app.route('/diasnolaborables/obtener_dias', methods=['POST'])
+@cache.cached(timeout=60)
 def obtener_dias():
     data = request.get_json()
     usuario = data['usuario']
@@ -97,8 +98,8 @@ def obtener_dias():
 
     try:
         # Obtener el conjunto para ese usuario
-        cd = s.get_conjunto(usuario)
-    except DiasNoLaborablesException as de:
+        cd = DiasNoLaborables(usuario=usuario)
+    except DiasNoLaborablesException:
         return jsonify({ 'msg': 'No existe un conjunto de días no laborables para ese usuario' }), 200
     
     # Transformar fechas 
@@ -120,8 +121,8 @@ def modificar_recordatorio():
 
     try:
         # Obtener el conjunto para ese usuario
-        cd = s.get_conjunto(usuario)
-    except DiasNoLaborablesException as de:
+        cd = DiasNoLaborables(usuario=usuario)
+    except DiasNoLaborablesException:
         return jsonify({ 'msg': 'No existe un conjunto de días no laborables para ese usuario' }), 200
     
     # Modificar días de antelación de recuerdo
@@ -138,8 +139,8 @@ def cancelar_recordatorio():
 
     try:
         # Obtener el conjunto para ese usuario
-        cd = s.get_conjunto(usuario)
-    except DiasNoLaborablesException as de:
+        cd = DiasNoLaborables(usuario=usuario)
+    except DiasNoLaborablesException:
         return jsonify({ 'msg': 'No existe un conjunto de días no laborables para ese usuario' }), 200
     
     # Cancelar recordatorio de un día no laboral de un usuario
