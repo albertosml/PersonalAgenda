@@ -76,7 +76,7 @@ Pues bien, los resultados de la evaluación son los siguientes:
 
 #### Microservicio `DiasNoLaborables`
 
-Partiendo del código y del contenedor Docker que se tenía en el hito anterior y, usando la librería taurus mencionada
+Partiendo del código y del contenedor Docker que se tenía en la práctica anterior y, usando la librería taurus mencionada
 anteriormente, se ha realizado un informe (ejecutanto para ello el comando `bzt tests/test_rendimiento.yml -report`),
 con el siguiente archivo de configuración:
 
@@ -127,7 +127,7 @@ Una vez dicho esto, se va a realizar otra prueba ejecutando el servidor en local
 ![Report servidor y base de datos local](docs/images/resultados_test_bd_code_local_old_version.png)
 
 Aquí, se puede apreciar cierta mejora de resultados con respecto a la anterior prueba de carga (371.12 peticiones/segundo
-y 20 ms de tiempo de respuesta), pero este rendimiento sigue siendo bajo, ya que no se ajusta al solicitado en este hito,
+y 20 ms de tiempo de respuesta), pero este rendimiento sigue siendo bajo, ya que no se ajusta al solicitado en esta práctica,
 el cual era de 1000 peticiones/segundo para 10 usuarios concurrentes con un 0% de errores, siendo esto último lo único
 que se está cumpliendo en este momento.
 
