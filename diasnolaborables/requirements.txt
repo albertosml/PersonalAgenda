@@ -7,3 +7,4 @@ mongomock
 dnspython
 Flask-Caching
 #bzt -> Este paquete no se puede instalar en Docker 
+#ansible[azure]

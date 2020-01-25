@@ -1,0 +1,61 @@
+- hosts: localhost # Grupo de máquinas
+  become: yes # Necesita adquirir privilegios para ejecutar el resto del fichero
+  roles: # Uso el rol undergreen.mongodb de Ansible Galaxy para instalar MongoDB
+    - { role: undergreen.mongodb }
+  tasks:
+    - name: Comprobar si Python 3 está instalado
+      shell:
+        cmd: which python3 # Comando que comprueba si Python 3 está instalado (produce salida si está instalando indicando dónde)
+      register: python_disponible # Se registra en una variable la salida del comando
+      ignore_errors: yes # Ignora que este comando no tenga salida, ya que nos interesa para saber que Python3 no está instalado en el sistema
+    - name: Instalar python 3
+      apt: pkg=python3 state=present # Se instala el paquete apt de python 3
+      when: python_disponible.rc != 0 # Se comprueba con la variable obtenida anteriormente si se ha obtenido salida
+    - name: Comprobar si pip 3 está instalado
+      shell:
+        cmd: which pip3 # Comando que comprueba si pip3 está instalado (produce salida si está instalando indicando dónde)
+      register: pip3_disponible  # Se registra en una variable la salida del comando
+      ignore_errors: yes # Ignora que este comando no tenga salida, ya que nos interesa para saber que Python3 no está instalado en el sistema
+    - name: Instalar pip 3
+      apt: pkg=python3-pip state=present # Se instala el paquete apt de pip3
+      when: pip3_disponible.rc != 0  # Se comprueba con la variable obtenida anteriormente si se ha obtenido salida
+    - name: Comprobar si git está instalado
+      shell:
+        cmd: which git # Comando que comprueba si git está instalado (produce salida si está instalando indicando dónde)
+      register: git_disponible # Se registra en una variable la salida del comando
+      ignore_errors: yes # Ignora que este comando no tenga salida, ya que nos interesa para saber que Python3 no está instalado en el sistema
+    - name: Instalar git
+      apt: pkg=git state=present # Se instala el paquete apt de git
+      when: git_disponible.rc != 0  # Se comprueba con la variable obtenida anteriormente si se ha obtenido salida o no
+    - name: Crear directorio con el código del microservicio
+      file: # Con el módulo de file se crea el directorio que va a contener el código del microservicio
+        path: PersonalWorkerAgenda
+        state: directory
+    - name: Descarga del código de la aplicación de Github
+      git: # Se usa el módulo de git para descargar la versión master del repositorio y lo clonamos en el directorio creado para ello
+        repo: https://github.com/albertosml/PersonalWorkerAgenda.git
+        version: master
+        dest: PersonalWorkerAgenda
+    - name: Instalar el entorno virtual de Python
+      pip: # Con el módulo de pip, se va a instalar virtualenv con pip3
+        name: virtualenv
+        executable: pip3
+    - name: Comprobar que el servicio de mongod se activa al iniciar la máquina
+      shell: # Con el módulo shell, se va a comprobar que mongo se va a activar siempre que se inicie la máquina
+        cmd: grep 'sudo service mongod start' ~/.bashrc
+      register: mongo_activado # Se registra en una variable la salida del comando
+    - name: Indicar en el archivo .bashrc que el entorno se iniciar cada vez que se encienda la máquina
+      shell: # Aquí, se va a insertar la línea que inicia mongo en el archivo .bashrc
+        cmd: echo 'sudo service mongod start' | sudo tee -a ~/.bashrc
+      when: mongo_activado != 0 # Condición que comprueba si la línea de mongo se ha insertado en el archivo (lo hace con la variable de antes), si es así, se ejecuta el comando
+    - name: Instalar el paquete invoke en el entorno virtualenv
+      pip: # Se instala el paquete invoke con pip
+        name: invoke
+    - name: Ejecutar la tarea que instala los paquetes requeridos en el entorno
+      shell: # En el directorio del microservicio, se va a ejecutar con invoke la tarea que instala los requerimientos de la aplicación
+        cmd: invoke build
+        chdir: PersonalWorkerAgenda/diasnolaborables
+    - name: Ejecutar la aplicación
+      shell: # Ejecutamos la aplicación en el directorio del microservicio (ES OPCIONAL, SOLO SE HACE SI QUEREMOS ARRANCAR LA APLICACIÓN DIRECTAMENTE )
+        cmd: invoke run-server --port=8000
+        chdir: PersonalWorkerAgenda/diasnolaborables

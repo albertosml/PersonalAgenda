@@ -1,0 +1,75 @@
+- name: Creación máquina virtual Azure para el microservicio `Días no laborables`
+  hosts: localhost # Define el grupo de hosts
+  connection: local # Define el tipo de conexión a utilizar para ejecutar las tareas que se exponen a continuación 
+  tasks: # Presenta el conjunto de tareas a hacer para crear la máquina virtual
+  - name: Crear grupo de recursos
+    azure_rm_resourcegroup: # Uso del plugin azure_rm para la creación de un grupo de recursos en Azure a través de Ansible
+      name: grupo_recursos # Define el nombre del grupo de recursos
+      location: westeurope # Establezco la zona oeste de Europa como localización del grupo de recursos
+  - name: Crear red virtual
+    azure_rm_virtualnetwork: # Uso del plugin azure_rm para la creación de una red virtual en Azure a través de Ansible
+      resource_group: grupo_recursos # Indico el grupo de recursos a la que pertenece esta red virtual
+      name: red_virtual # Define el nombre de la red virtual
+      address_prefixes: "10.0.0.0/28" # Se reservan 8 IPs, ya que se van a usar pocas direcciones
+  - name: Crear subred asociada a la red virtual
+    azure_rm_subnet: # Uso del plugin azure_rm para la creación de una subred en Azure a través de Ansible
+      resource_group: grupo_recursos # Define el grupo de recursos al que pertenece
+      virtual_network: red_virtual # Define la red virtual a la que pertenece
+      name: subred # Nombre de la subred
+      address_prefix: "10.0.0.8/29" # Se han reservado 2 IPs: 1 IP máquina virtual + 1 IP máquina base de datos MongoDB (más las 5 reservadas por Azure)
+  - name: Crear IP pública
+    azure_rm_publicipaddress: # Uso del plugin azure_rm para la creación de una IP pública en Azure a través de Ansible
+      resource_group: grupo_recursos # Define el grupo de recursos al que pertenece
+      allocation_method: static # Indica que el método de asignación de la IP pública sea estática (fija)
+      name: ip_publica
+    register: ip_pulica_diasnolaborables # Registro la IP obtenida en una variable para mostrarla por consola
+  - name: Mostrar por consola la IP pública obtenida
+    debug:
+      msg: "La IP pública para la máquina de diasnolaborables es: {{ ip_pulica_diasnolaborables.state.ip_address }}." # En modo de depuración, se muestra un mensaje con la IP obtenida
+  - name: Crear un grupo de seguridad que permita una conexión SSH, HTTP y al puerto de la aplicación
+    azure_rm_securitygroup: # Uso del plugin azure_rm para la creación de un grupo de seguridad de red en Azure a través de Ansible
+      resource_group: grupo_recursos # Define el grupo de recursos al que pertenece
+      name: grupo_seguridad # Define el nombre del grupo de seguridad de red
+      rules: # Define las reglas de entrada/salida del grupo de seguridad
+        - name: SSH # Nombre de la regla de SSH
+          protocol: Tcp # Protocolo
+          destination_port_range: 22 # Puerto al que afecta
+          access: Allow # Se permite acceso
+          priority: 101 # Prioridad de la regla
+          direction: Inbound # Regla de entrada
+        - name: HTTP # Nombre de la regla de HTTP
+          protocol: Tcp # Protocolo
+          destination_port_range: 80 # Puerto al que afecta
+          access: Allow # Se permite acceso
+          priority: 102 # Prioridad de la regla
+          direction: Inbound # Regla de entrada
+        - name: Flask # Nombre de la regla del puerto de la aplicación
+          protocol: Tcp # Protocolo
+          destination_port_range: 8000 # Puerto al que afecta
+          access: Allow # Se permite acceso
+          priority: 103 # Prioridad de la regla
+          direction: Inbound # Regla de entrada
+  - name: Crear la tarjeta para la interfaz de red virtual
+    azure_rm_networkinterface: # Uso del plugin azure_rm para la creación de la tarjeta de interfaz de red virtual en Azure a través de Ansible
+      resource_group: grupo_recursos # Define el grupo de recursos al que pertenece
+      virtual_network: red_virtual # Define la red virtual a la que pertenece
+      subnet: subred # Define la red a la que pertenece
+      public_ip_name: ip_publica # Define a la IP pública asociada
+      security_group: grupo_seguridad # Define el grupo de seguridad al que pertenece
+      name: interfaz_red # Nombre de la interfaz de red
+  - name: Crear la máquina virtual para la ejecución del microservicio
+    azure_rm_virtualmachine: # Uso del plugin azure_rm para la creación de la máquina virtual en Azure a través de Ansible
+      resource_group: grupo_recursos # Define el grupo de recursos al que pertenece
+      network_interfaces: interfaz_red # Define la interfaz de red a la que pertenece
+      name: maquinavirtual # Nombre de la máquina virtual
+      vm_size: Standard_B4ms # Se elige el tamaño de la máquina virtual: aquí se ha optado por una máquina con potencia (4 vCPU y 16 GB de RAM)
+      admin_username: diasnolaborables # Se ha elegido el nombre del microservicio como nombre de usuario del administrador
+      ssh_password_enabled: false # Solo se va a permitir la autenticación a la máquina virtual a través de la clave pública, no con contraseña
+      ssh_public_keys:
+        - path: /home/diasnolaborables/.ssh/authorized_keys # Ruta donde se va a almacenar la clave pública
+          key_data: <public-key> # Clave pública
+      image:
+        offer: debian-10 # Sistema operativo
+        publisher: Debian # Distribuidor
+        sku: 10 # Número de instancia del distribuidor
+        version: latest # Versión de Ubuntu
