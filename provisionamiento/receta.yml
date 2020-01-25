@@ -57,5 +57,5 @@
         chdir: PersonalWorkerAgenda/diasnolaborables
     - name: Ejecutar la aplicación
       shell: # Ejecutamos la aplicación en el directorio del microservicio (ES OPCIONAL, SOLO SE HACE SI QUEREMOS ARRANCAR LA APLICACIÓN DIRECTAMENTE )
-        cmd: invoke run-server --port=8000
+        cmd: invoke run-server --port=8000 --daemon=True
         chdir: PersonalWorkerAgenda/diasnolaborables

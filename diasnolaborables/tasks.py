@@ -12,9 +12,10 @@ def build(c):
 def test(c, dir='tests'):
     c.run("pytest {}/*.py".format(dir))
 
-@task(optional=['port'])
-def run_server(c, port=8000):
-    c.run("gunicorn --workers=9 --chdir src app:app -b 0.0.0.0:{} --log-syslog".format(port))
+@task(optional=['port', 'daemon'])
+def run_server(c, port=8000, daemon=False):
+    demonio = '--daemon' if daemon else '' 
+    c.run("gunicorn --workers=9 --chdir src app:app -b 0.0.0.0:{} --log-syslog {}".format(port, demonio))
 
 @task(optional=['tag', 'no-cache'])
 def build_image(c, tag='diasnolaborables', cache=True):

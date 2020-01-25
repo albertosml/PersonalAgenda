@@ -50,7 +50,7 @@ Respuesta:
 
 # Días no laborables
 curl --header "Content-Type: application/json" --request POST --data '{"usuario":"albertosml", "fechainicio": "25/01/2020", 
-"fechafin": "04/03/2020"}' http://13.94.247.131/diasnolaborables/obtener_dias
+"fechafin": "04/03/2020"}' http://13.94.247.131:8000/diasnolaborables/obtener_dias
 
 Respuesta: {"diasnolaborables":["25/01/2020","01/02/2020","08/02/2020","15/02/2020","22/02/2020","29/02/2020"]}
 ```
@@ -272,7 +272,7 @@ que se ha incluido en la receta de instalación del resto de paquetes, quedando 
         chdir: PersonalWorkerAgenda/diasnolaborables
     - name: Ejecutar la aplicación
       shell: # Ejecutamos la aplicación en el directorio del microservicio (ES OPCIONAL, SOLO SE HACE SI QUEREMOS ARRANCAR LA APLICACIÓN DIRECTAMENTE )
-        cmd: invoke run-server --port=8000
+        cmd: invoke run-server --port=8000 --daemon=True
         chdir: PersonalWorkerAgenda/diasnolaborables
 ```
 
